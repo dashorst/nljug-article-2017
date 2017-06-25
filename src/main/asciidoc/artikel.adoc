@@ -1,0 +1,53 @@
+= Genereer een gebruikershandleiding met je tests
+Martijn Dashorst <dashorst@apache.org>
+1.0, May 28, 2017, Topicus
+:doctype: article
+:toc:
+:icons: font
+:quick-uri: https://github.com/dashorst/nljug2017
+
+Je bent druk bezig met het ontwikkelen van je applicatie en dan staat in eens de productowner naast je bureau: hebben we al een handleiding voor de gebruikers?
+Je stamelt iets over geen tijd gehad hebben en de productowner gaat weer weg om een paar weken later een Word document met BMP screenshots van de applicatie van 3 weken geleden in te checken.
+Vier sprints later en de screenshots lijken helemaal niet meer op wat er echt in de applicatie gebeurt.
+De productowner en de ontwikkelaars nemen in de definition of done op dat de handleiding ook meegenomen moet worden, maar uiteindelijk vindt niemand de tijd om alle screenshots langs te gaan en opnieuw te maken en bij te snijden. 
+
+Het maken en bijsnijden van honderden screenshots is enerverend werk dat elk teamlid graag elke release opnieuw doet, toch?
+Het hoeft niet zo te zijn: wij zijn in dit vakgebied gestapt om tijdrovende, menselijke handelingen te automatiseren zodat er tijd overblijft om leukere, waardevollere dingen te doen.
+
+Met de juiste ontwikkeltools kan je de screenshots automatisch genereren, integreren in een mooie handleiding en ook nog eens je applicatie goed testen.
+
+In dit artikel laat ik zien hoe je een altijd up-to-date handleiding kan genereren met AsciiDoctor, Graphene, Arquillian en AShot.
+
+== Documentatie en Ontwikkelaars
+
+De relatie tussen ontwikkelaars en documentatie is gecompliceerd. Volgens allerlei onderzoeken worden ontwikkelaars het meest gehinderd in hun werk door een gebrek aan documentatie. Zo geeft het grote ontwikkelaarsonderzoek van Stackoverflow uit 2016 gebrekkige documentatie de nummer 2 positie van uitdagingen op het werk (net onder onrealistische verwachtingen met een verschil van 0,2%). Overigens prijkt "aardig moeten doen" ook op deze lijst (plek 16 met 8%).
+
+Daarentegen schrijven maar weinig ontwikkelaars graag documentatie. Alle methodieken zijn er op gericht om documentatie zoveel mogelijk te vermijden: je moet de juiste en duidelijke namen gebruiken voor je functies en variabelen, korte functies schrijven die lezen als een boek je tests zijn de documentatie, je code is de documentatie en (althans volgens Peter Hilton) moet je je telefoonnummer opnemen in elke sourcefile.
+
+Toch blijkt dat niet altijd voldoende. De code beschrijft niet waarom iets zo geschreven is. En als je project uit 1 miljoen regels code bestaat, duizenden classes en honderden packages, hoe weet je waar je een bepaalde functie uit een class kan vinden? Je moet maar net de juiste naam gebruiken in de autocomplete van je IDE. Maar als nieuw teamlid is het overweldigend om zo'n project in te stromen.
+
+Documentatie werkt het beste als de afstand tot de code zo klein mogelijk is. Een Word document schrijven en die opslaan op een netwerkschijf (_de f-schijf_) is een recept voor out-of-date documentatie. En alhoewel nog nooit iemand is ontslagen voor het aanschaffen van Confluence, zijn wiki's de plek waar documentatie naar toegaat om te sterven. De snelheid van veroudering van je documentatie is recht evenredig met de afstand tot de code. Inline documentatie heeft de grootste kans om aangepast te worden bij code wijzigingen. JavaDoc (je weet wel, dat auto-gegenereerde commentaar boven je methods) is daarna de meest hoopgevende documentatievorm. De README.md in de root van je project wordt ook nog wel eens onderhouden. Maar wanneer je documentatie opgeslagen wordt in de Github Wiki, Confluence, Word documenten of Google Docs verandert het van nuttige documentatie naar archeologische curiositeit voordat je je minimal viable product uitgeleverd hebt aan je klanten.
+
+Helaas biedt JavaDoc alleen maar soelaas wanneer je al bij de class of methode bent aangekomen. Voor het ontdekken van functionaliteit is het bijzonder ongeschikt. Een overkoepelend document mist bij JavaDoc (overview.html of package-info.html werken onvoldoende in een IDE--het lezen van tekst tussen < en > tekens is bijzonder demotiverend). Dus er is extra overzichtdocumentatie nodig om het overzicht te geven over je project. Het handigste is om deze documentatie zo dicht mogelijk te houden bij je source code, en indien mogelijk ook te laten quoten uit je source code zodat het ook altijd nog gecompileerd en getest wordt.
+
+Met AsciiDoctor kan je dat ideaal bereiken. AsciiDoctor is een platte tekst-formaat met onder andere mogelijkheden om (gedeeltes van) source code te includeren in je tekst. Met behulp van een Maven plugin kan je het onderdeel maken van je build zodat de documentatie altijd up-to-date is. Je kan het publiceren naar HTML, epub of PDF. Daarnaast is AsciiDoctor een prima formaat om ook handleidingen in te schrijven. Het is een ontwikkelaar-vriendelijk formaat dat versioneerbaar is in Git, eenvoudig te leren en beter op te maken is dan Word documenten.
+
+== Hoe schrijf je een handleiding in AsciiDoctor?
+
+Om je documentatie te schrijven in AsciiDoctor moet je `.adoc` documenten aanmaken. Aangezien een handleiding een soort boek is, kan je het beste beginnen met een boek definitie:
+
+[]
+====
+= Handleiding Cheesr <1>
+Martijn Dashorst <dashorst@topicus.nl> <2>
+1.0, May 28, 2017, Topicus
+:doctype: book <3>
+:toc: <4>
+====
+<1>: De titel van het boek
+<2>: De auteur
+<3>: Geeft aan dat we een boek willen
+<4>: Genereer een inhoudsopgave
+
+== Wat is AsciiDoctor?
+

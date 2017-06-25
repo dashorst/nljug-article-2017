@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:wicket="http://wicket.apache.org" lang="en">
+<head>
+<title>Cheesr - Making cheese taste beta</title>
+<meta charset="utf-8">
+<wicket:link>
+	<link href="style/style.css" rel="stylesheet" media="screen" />
+</wicket:link>
+</head>
+<body>
+	<div id="container">
+		<div id="header">
+			<h1>Cheesr - checkout</h1>
+		</div>
+		<div id="content">
+			<div id="main">
+				<div wicket:id="feedback">
+					<ul>
+						<li>Name is required</li>
+					</ul>
+				</div>
+				<form wicket:id="form">
+					<h3>Check out</h3>
+					<p>Please enter your billing address.</p>
+					<table>
+						<tr>
+							<th>Name</th>
+							<td><input type="text" wicket:id="name" /></td>
+						</tr>
+						<tr>
+							<th>Street</th>
+							<td><input type="text" wicket:id="street" /></td>
+						</tr>
+						<tr>
+							<th>City</th>
+							<td><input type="text" wicket:id="city" /></td>
+						</tr>
+						<tr>
+							<th>County</th>
+							<td><select wicket:id="country">
+									<option>Alabama</option>
+									<option>Nebraska</option>
+							</select></td>
+						</tr>
+						<tr>
+							<th>&nbsp;</th>
+							<td>
+								<input type="button" value="Cancel" wicket:id="cancel" />
+								<input type="submit" value="Order!" wicket:id="order" />
+							</td>
+						</tr>
+
+					</table>
+				</form>
+			</div>
+			<div id="side">
+				<div id="cart" wicket:id="cart"></div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,63 @@
+= Cheesr Manual
+Martijn Dashorst <martijn.dashorst@topicus.nl>
+1.0, May 28, 2017, Topicus
+:doctype: book
+:front-cover-image: image:cheesr-cover.jpg[Frontpage,1654,2339]
+:icons: font
+:quick-uri: https://github.com/dashorst/nljug2017
+:toc:
+
+:!numbered:
+
+toc::[]
+
+== Introduction
+
+Thank you for your interest in shopping for the most delicious cheese in the country.
+Launched in 2005, Cheesr is one of the first online cheese stores with a wide selection of the most
+tasteful cheeses in the world.
+
+We hope you enjoy our selection of cheese as much as we do!
+
+-- Team Cheesr
+
+:numbered:
+
+== Buying Cheese
+
+When you point your browser to our store front using the URL _http://example.com_. This will show
+you the page from <<cheesr-home>>.
+
+[[cheesr-home, figure 1]]
+.The home page of the Cheesr store.
+image::cheesr-1-home.png[]
+
+You can browse the cheeses using the navigator at the bottom of the page (<<cheesr-navigator>>).
+
+[[cheesr-navigator, figure 2]]
+.The navigator to discover even more cheese!
+image::cheesr-1-home-navigator.png[]
+
+When you have found the cheese of your liking, you can add it to your shopping cart using the _add_
+link. This will add the cheese to the cart, as shown in <<cheesr-cart>>.
+
+[[cheesr-cart, figure 3]]
+.No shopping cart should go without Edam cheese.
+image::cheesr-2-cart-1-edam.png[]
+
+If you wish to remove an item from the cart you can click the _remove_ link.
+
+You can add as many items to your shopping cart as you wish. When you are finished selecting your
+cheese list you can proceed to checkout using the checkout button, as shown in figure 3.
+
+== Completing your order
+
+When you want to checkout your shopping cart you have to fill in the form. The fields are used
+for shipping the delicious cheeses to the address.
+
+You can continue shopping for cheese using the _Cancel_ button. This will take you back to the
+home page with the cheese selection.
+
+When you click the _Order_ button you will have purchased the order and the cheeses will be sent to
+the address.
+

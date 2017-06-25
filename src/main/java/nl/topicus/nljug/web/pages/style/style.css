@@ -1,0 +1,10 @@
+html {height: 100%;}
+body { margin : 0; padding : 0; font-family : georgia, times, serif; font-size : 15px; height: 100%;}
+div { margin : 0; padding : 0; border : none;}
+#container { margin-left : auto; margin-right:auto;width:720px;height: 100%;}
+#content { width : 700px; padding-left:10px; padding-right : 10px;height: 100%;}
+#main { width : 478px; float : left; }
+#side { width : 218px; float : right; }
+
+#header { width : 100%; height : 150px; background:url(logo.png) center no-repeat;}
+#header h1 { display : none; }

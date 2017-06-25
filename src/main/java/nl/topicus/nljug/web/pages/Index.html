@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:wicket="http://wicket.apache.org" lang="en">
+<head>
+<title>Cheesr - Making cheese taste beta</title>
+<meta charset="utf-8">
+<wicket:link>
+	<link href="style/style.css" rel="stylesheet" media="screen" />
+</wicket:link>
+</head>
+<body>
+	<div id="container">
+		<div id="header">
+			<h1>Cheesr</h1>
+		</div>
+		<div id="content">
+			<div id="main">
+				<div class="cheese" wicket:id="items">
+					<h3 wicket:id="name">Gouda</h3>
+					<p wicket:id="description">Named after the Dutch town of Gouda, just outside Rotterdam. It accounts for more than 60% of the cheese produced
+						in Holland and it has a very long history. Gouda is a traditional, creamery, hard cheese. It is round with very smooth, yellow, waxed rind. The
+						flavor is sweet and fruity. As time passes, the taste intensifies and becomes more complex. Mature Gouda (18 months plus) is coated in black wax
+						which provides a stark contrast to the deep yellow interior. Gouda is considered to be one of the world's great cheeses. It is both a table
+						cheese and a dessert cheese, excellent with fruit and wine. Gouda is now made globally in a style similar to the creation of Edam.</p>
+					<p>
+						<span>€<wicket:container wicket:id="price">1.99</wicket:container></span>
+						<a wicket:id="add" href="#">Add to cart</a>
+					</p>
+				</div>
+				<div wicket:id="navigator" id="navigator">
+					<a href="#">&lt;&lt;</a> <a href="#">&lt;</a> <a href="#">1</a> <a href="#">2</a> <a href="#">3</a> <a href="#">4</a> <a href="#">&gt;</a> <a
+						href="#">&gt;&gt;</a>
+				</div>
+				<br /> <br />
+			</div>
+			<div id="side">
+				<div id="cart" wicket:id="cart"></div>
+				<input type="button" wicket:id="checkout" value="Check out" />
+				<div>
+					<h3>About</h3>
+					<p>
+						Cheesr is the first online cheese retailer founded in 2005 and copied around
+						the world. We are in perpetual feta and we make cheese taste beta.
+					</p>
+					<p>
+						If you would like to learn more about how to order cheese using Cheesr,
+						check out these awesome resources:
+					</p>					
+					<ul>
+						<li><a href="/manual/cheesr.html">Online manual</a> (<a href="/manual/cheesr.pdf">PDF</a>)</li>
+						<li><a href="/manual/artikel.html">Making of Cheesr</a> (<a href="/manual/artikel.pdf">PDF</a>)</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
