@@ -123,6 +123,7 @@ src/main/asciidoc
     └── pageobjects.png
 ----
 
+Met deze documenten kan AsciiDoctor de handleiding genereren en de screenshots (uit `target/screenshots`) in de handleiding opnemen.
 De screenshots worden genomen tijdens het uitvoeren van de applicatietests.
 Dit is opgezet met behulp van Arquillian, WebDriver en Graphene. 
 
