@@ -3,7 +3,7 @@
 This project was crafted as an example for generating a user manual with screenshots from your tests.
 It was conceived as an article for the magazine of the Dutch Java User Group _NLJUG_.
 
-The src/main/asciidoc/artikel.adoc[article] is written in Dutch, but you are welcome to browse the source code.
+The link:src/main/asciidoc/artikel.adoc[article] is written in Dutch, but you are welcome to browse the source code.
 
 == Building and running the application
 
