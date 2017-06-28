@@ -211,11 +211,11 @@ Nu kunnen we tijdens het testen screenshots wegschrijven en deze gebruiken in on
 include::{testdir}/tests/IndexTest.java[tags="buy"]
 ----
 
-Een voorbeeld van een screenshot genomen met aShot zie je in <<cheesr-home>>.
+Een voorbeeld van de screenshots genomen in deze test zie je in <<cheesr-home>>.
 
 [[cheesr-home, afbeelding 4]]
-.De home page van de kaaswinkel
-image::cheesr-1-home.png[]
+.Twee screenshots van de winkelwagen
+image::screenshots.png[]
 
 En hiermee is het artikel rond: we kunnen de applicatie testen, screenshots maken en een handleiding genereren. 
 
