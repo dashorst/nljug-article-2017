@@ -3,7 +3,14 @@
 This project was crafted as an example for generating a user manual with screenshots from your tests.
 It was conceived as an article for the magazine of the Dutch Java User Group _NLJUG_.
 
-The link:src/main/asciidoc/artikel.adoc[article] is written in Dutch, but you are welcome to browse the source code.
+== License
+
+The article file(s) listed below are licensed https://creativecommons.org/licenses/by-sa/4.0/[CC BY-SA 4.0]
+
+- src/main/asciidoc/artikel.adoc
+- src/main/asciidoc/artikel2.adoc
+
+Everything else of this project is https://opensource.org/licenses/MIT[MIT licensed].
 
 == Building and running the application
 
