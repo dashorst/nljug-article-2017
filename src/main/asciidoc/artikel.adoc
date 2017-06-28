@@ -13,7 +13,7 @@ Martijn Dashorst <martijn.dashorst@topicus.nl>
 "Hebben we al een handleiding voor de gebruikers?" vraagt de productowner.
 Terwijl je teamgenoten onder hun bureau's duiken, stamel jij iets over geen tijd, wisselende prioriteiten en de ellenlange backlog.
 Zonder succes natuurlijk, dus ben jij de vrijwilliger om het 96 pagina's tellende Word document te voorzien van 149 screenshots. 
-Vier sprints later blijkt dat de applicatie totaal niet meer lijkt op de screenshots en mag je dus weer van voren af aan beginnen.
+Vier sprints later lijkt de applicatie totaal niet meer op de screenshots en mag je dus weer van voren af aan beginnen.
 
 Maar het kan anders! We zijn in dit vakgebied gestapt om tijdrovende menselijke handelingen te automatiseren zodat er tijd overblijft om leuke, waardevolle dingen te doen!
 En juist software schrijven en complexe problemen oplossen vinden we leuk!
@@ -54,8 +54,7 @@ Afbeelding 2 illustreert de stappen die doorlopen worden om vanaf de source code
 image::build-process.png[]
 
 Nadat de broncode gecompileerd is worden de tests gedraaid.
-De tests sturen een browser aan die de webapplicatie test. 
-Dit wordt met behulp van _Arquillian_, _WebDriver_ en _Graphene_ uitgevoerd.
+Met behulp van _Arquillian_, _WebDriver_ en _Graphene_ wordt in de tests een browser aangestuurd die de webapplicatie test.
 De bibliotheek _aShot_ maakt de screenshots en zet deze bestanden in de folder `target/screenshots`.
 
 In de fase "pre-package" van het bouwprocess, vlak voordat de webapplicatie geassembleerd wordt door Maven, converteert _AsciiDoctor_ de handleiding van _AsciiDoc_ naar HTML en PDF.  
@@ -124,7 +123,6 @@ src/main/asciidoc
     └── pageobjects.png
 ----
 
-Met deze documenten kan AsciiDoctor de handleiding genereren en de screenshots in de handleiding opnemen.
 De screenshots worden genomen tijdens het uitvoeren van de applicatietests.
 Dit is opgezet met behulp van Arquillian, WebDriver en Graphene. 
 
