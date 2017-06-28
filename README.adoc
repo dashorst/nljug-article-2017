@@ -1,0 +1,46 @@
+= Generating screenshots and a manual using your tests 
+
+This project was crafted as an example for generating a user manual with screenshots from your tests.
+It was conceived as an article for the magazine of the Dutch Java User Group _NLJUG_.
+
+The src/main/asciidoc/artikel.adoc[article] is written in Dutch, but you are welcome to browse the source code.
+
+== Building and running the application
+
+This application requires Java 8 and Maven 3 (3.5.0 recommended).
+
+=== IDE
+
+You can import the project into your IDE and build it there.
+You can run the tests inside your IDE (see `src/test/java/nl/topicus/nljug/tests`)
+
+=== Commandline
+
+Using `mvn package` will build the project and craft the application including the manual and screenshots.
+
+Using `mvn jetty:run` when you have built the project will launch a server and you can then use the application from localhost (port 8080). 
+
+== Technologies
+
+This is a Maven project, and it uses _Arquillian_, _WebDriver_, _Graphene_, _aShot_ and _AsciiDoctor_ to test the application and generate the article and manual.
+
+=== Arquillian setup
+
+You set up Arquillian by including the necessary libraries as dependencies in the Maven POM.
+To change from _phantom.js_ as the browser, you have to modify the `src/test/resources/arquillian.xml` file.
+You can add additional configuration in that file.
+
+NOTE: phantom.js is a deprecated project because Chrome and Firefox are working hard to build headless support into their browsers.
+
+== Additional notes
+
+- in order to capture partial screenshots, aShot requires JQuery to be in the HTML of the page. Because of this, the IndexPage and CheckoutPage include a JQuery reference as a header item.
+
+- the pipeline for files is:
+  - tests generate screenshots in `target/screenshots`
+  - Maven resource plugin copies image files from `src/main/asciidoc/images` to `target/screenshots` because AsciiDoctor can't handle multiple image folders
+  - AsciiDoctor assembles the manuals into the `target/generated-docs` folder
+  - Maven war plugin copies the `target/generated-docs` folder into the war under `/manual`
+  
+- Graphene is not required, but makes writing tests a much better experience
+ 
