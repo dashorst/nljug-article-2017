@@ -11,17 +11,16 @@ Martijn Dashorst <martijn.dashorst@topicus.nl>
 :indent: 0
 
 "Hebben we al een handleiding voor de gebruikers?" vraagt de productowner.
-Terwijl je teamgenoten onder hun bureaus duiken, stamel je iets over geen tijd, wisselende prioriteiten en de ellenlange backlog.
-Jij bent dan de vrijwilliger om het 96 paginas tellende Word document te voorzien van 149 screenshots. 
-Helaas blijkt vier sprints later dat de applicatie helemaal niet meer lijkt op de screenshots:
-je mag weer aan de bak om die 149 screenshots opnieuw te maken en uit te snijden.
+Terwijl je teamgenoten onder hun bureau's duiken, stamel jij iets over geen tijd, wisselende prioriteiten en de ellenlange backlog.
+Zonder succes natuurlijk, dus ben jij de vrijwilliger om het 96 pagina's tellende Word document te voorzien van 149 screenshots. 
+Vier sprints later blijkt dat de applicatie totaal niet meer lijkt op de screenshots en mag je dus weer van voren af aan beginnen.
 
-Het hoeft niet zo te zijn: wij zijn in dit vakgebied gestapt om tijdrovende, menselijke handelingen te automatiseren zodat er tijd overblijft om leukere, waardevollere dingen te doen!
-En wat we leuk vinden is juist software schrijven en complexe problemen oplossen!
+Maar het kan anders! We zijn in dit vakgebied gestapt om tijdrovende menselijke handelingen te automatiseren zodat er tijd overblijft om leuke, waardevolle dingen te doen!
+En juist software schrijven en complexe problemen oplossen vinden we leuk!
 
-Als ik je nu vertel dat je met de juiste ontwikkeltools de screenshots automatisch kan maken,
-deze integreren in een mooi opgemaakte handleiding in HTML en PDF formaat,
-en daarbij ook nog eens je applicatie goed kan testen?
+Als ik je nu vertel dat je met de juiste ontwikkeltools automatisch screenshots kan maken,
+deze integreren in een mooi opgemaakte handleiding in HTML en PDF formaat
+en daarbij direct ook nog eens je applicatie goed kan testen, dan heb ik je aandacht toch?
 
 In dit artikel laat ik zien hoe je een altijd up-to-date handleiding kan genereren met AsciiDoctor, Graphene, Arquillian en aShot.
 Het lost een daadwerkelijk probleem op, bestaat uit een hoop programmeerwerk, kan zo complex worden als je zelf wil en is ook nog eens leuk!
@@ -30,13 +29,13 @@ Om dit te illustreren gebruik ik een eenvoudig project: een online kaaswinkel.
 
 == De kaaswinkel Cheesr
 
-De kaaswinkel '_Cheesr_' is bedacht in 2005 omdat Eelco, mijn toenmalige co-auteur, de kaaswinkel "de Brink" in Deventer enorm miste na zijn emigratie naar de VS.
-Het is een standaard webapplicatie met twee schermen: het selecteren van kazen en het plaatsen van de bestelling.
-Voor Cheesr is een handleiding geschreven.
-In <<cheesr-manual>> zie je een aantal paginas van de handleiding.
+De kaaswinkel '_Cheesr_' is bedacht in 2005 omdat Eelco, mijn toenmalige co-auteur, kaaswinkel "De Brink" in Deventer enorm miste na zijn emigratie naar de VS.
+Het is een standaard webapplicatie met twee schermen: het selecteren van kazen en het plaatsen van een bestelling.
+
+In <<cheesr-manual>> zie je een aantal pagina's van de handleiding.
 
 [[cheesr-manual, afbeelding 1]]
-.Een aantal paginas van de handleiding van Cheesr
+.Een aantal pagina's van de handleiding van Cheesr
 image::cheesr-manual.jpg[]
 
 .Bekijk alle code op Github
@@ -63,7 +62,7 @@ In de fase "pre-package" van het Maven bouwprocess, vlak voordat de webapplicati
 Uiteindelijk is dan de webapplicatie klaar en zit daarin ook de handleiding als PDF en als HTML bestand.
 
 Als voorbeeld test de code in <<listing-indextest>> dat de checkout-knop niet beschikbaar is als je nog geen item in je winkelwagen hebt zitten.
-Daarnaast maakt de test ook meteen de eerste screenshots (bijvoorbeeld <<cheesr-home>>).
+Daarnaast maakt de test ook direct de eerste screenshots (bijvoorbeeld <<cheesr-home>>).
 
 [[listing-indextest, listing 1]]
 .De eerste test van de kaaswinkel
@@ -75,7 +74,7 @@ include::{testdir}/tests/IndexTest.java[tags="simple,deployment,webdriver"]
 De annotatie `@RunWith(Arquillian.class)` geeft aan dat deze testcase met _Arquillian_ gedraaid moet worden.
 Met Arquillian kan je integratietests uitvoeren, servers starten en stoppen en je applicatiecode deployen.
 
-De methode `createDeployment` met de annotatie `@Deployment` vertelt Arquillian wat er naar de server gedeployd moet worden: in dit geval een WAR met daarin onze applicatiecode.
+De methode `createDeployment` met de annotatie `@Deployment` vertelt Arquillian wat er naar de server gedeployed moet worden: in dit geval een WAR met daarin onze applicatiecode.
 
 Het veld `@Drone WebDriver browser` is een instructie zodat Arquillian een instantie van _WebDriver_ injecteert in de testcase waarmee we de browser kunnen besturen.
 
@@ -83,7 +82,7 @@ De parameter `@InitialPage GIndex index` van de testmethode geeft aan dat deze t
 `GIndex` is een representatie van de interactiemogelijkheden van de homepage van Cheesr: een implementatie van het _Page Object Pattern_.
 Deze class bevat onder andere de locatie (URL) waar de browser naar toe gezonden moet worden.
 _Graphene_ zorgt ervoor dat de `GIndex` instantie correct gemaakt is, en dat de browser de pagina laadt net voordat de test begonnen is.
-Je kan dan meteen interacteren met die pagina, zoals screenshots nemen of op links klikken, of uitvragen of bepaalde elementen al dan niet aanwezig zijn.
+Je kan dan meteen interacteren met die pagina, zoals screenshots nemen, op links klikken, of uitvragen of bepaalde elementen aanwezig zijn.
 
 Voor nu is het handig om te zien hoe de screenshots van deze test gebruikt worden in de tekst van de handleiding.
 Het stukje AsciiDoc uit <<listing-asciidoc>> is een voorbeeld hiervan. 
@@ -222,14 +221,14 @@ En hiermee is het artikel rond: we kunnen de applicatie testen, screenshots make
 
 == Conclusie
 
-We hebben nu alle onderdelen bij elkaar: de documentatie leeft met de code in AsciiDoc formaat.
+We hebben één geïntegreerd geheel: de documentatie leeft samen met de code in AsciiDoc formaat.
 We testen onze applicatie via de browser dankzij Arquillian en Graphene.
 Tijdens het uitvoeren van de tests maken we screenshots en spitsen deze toe op precies die onderdelen die belangrijk zijn met aShot.
 Maven voegt al deze stappen samen tot één geölied proces dat uiteindelijk onze up-to-date handleiding opneemt in onze applicatie.
 
-Met deze setup kan je ook geïnternationaliseerde screenshots maken voor je meertalige handleidingen:
+Met deze setup kan je ook geïnternationaliseerde screenshots maken voor meertalige handleidingen:
 zet je applicatie in een andere taal en voer de tests opnieuw uit.
-Nu alleen nog iemand bereid vinden om die 96 paginas te vertalen.
+Nu alleen nog iemand bereid vinden om die 96 pagina's tekst te vertalen.
 
 .Over de auteur
 ****
