@@ -169,7 +169,7 @@ Natuurlijk is dit gewoon het verplaatsen van de WebDriver logica naar een façad
 De code in <<listing-gindex>> laat de implementatie zien van het `GIndex` page object.
 
 .Een Page Object voor de Cheesr homepage
-[[listing-gindex, listing 5]]
+[[listing-gindex, listing 4]]
 [source,java,indent=0]
 ----
 include::{testdir}/pageobjects/GIndex.java[tags=buy] 
@@ -195,7 +195,7 @@ Daarnaast kan je ook aangeven dat er extra ruimte om de elementen meegenomen moe
 De code in <<listing-camera>> laat zien hoe je dit met aShot voor elkaar kan krijgen. 
 
 .Neemt een screenshot van specifieke elementen in de pagina
-[[listing-camera, listing 6]] 
+[[listing-camera, listing 5]] 
 [source,java,indent=0]
 ----
 include::{testdir}/Camera.java[tags=multishot]
@@ -205,7 +205,7 @@ Met deze functie is het maken van een screenshot heel eenvoudig geworden.
 Nu kunnen we tijdens het testen screenshots wegschrijven en deze gebruiken in onze handleiding zoals in <<listing-buy>>.
 
 .Een test die gebruik maakt van het page object `GIndex` en screenshots neemt
-[[listing-buy, listing 7]]
+[[listing-buy, listing 6]]
 [source,java,indent=0]
 ----
 include::{testdir}/tests/IndexTest.java[tags="buy"]
