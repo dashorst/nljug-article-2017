@@ -1,10 +1,6 @@
 <arquillian>
-
-    <!-- clip -->
     <extension qualifier="webdriver">
         <property name="browser">phantomjs</property>
 		<property name="dimensions">800x768</property>
     </extension>
-    <!-- clip -->
-
 </arquillian>

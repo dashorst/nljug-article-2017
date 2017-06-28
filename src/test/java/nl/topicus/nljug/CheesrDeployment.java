@@ -1,26 +1,30 @@
 package nl.topicus.nljug;
 
 import java.io.File;
-import java.nio.file.Paths;
 
-import org.jboss.shrinkwrap.api.GenericArchive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.importer.ExplodedImporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
-import org.jboss.shrinkwrap.resolver.api.maven.PomEquippedResolveStage;
 
 public class CheesrDeployment {
+	// tag::createWar[]
 	public static WebArchive createWar() {
-		PomEquippedResolveStage pom = Maven.configureResolver().workOffline().loadPomFromFile("pom.xml");
+		File[] dependencies = 
+			Maven.configureResolver()
+				.workOffline()
+				.loadPomFromFile("pom.xml") // <1>
+				.importCompileAndRuntimeDependencies()
+				.resolve()
+				.withTransitivity()
+				.asFile(); // <2>
 
-		GenericArchive webapp = ShrinkWrap.create(GenericArchive.class).as(ExplodedImporter.class)
-				.importDirectory("src/main/webapp").as(GenericArchive.class);
+		WebArchive war = 
+				ShrinkWrap.create(WebArchive.class)
+				.addAsWebInfResource(new File("src/main/webapp/WEB-INF/web.xml"))
+				.addAsLibraries(dependencies)
+				.addAsResource(new File("target/classes"), ""); // <3>
 
-		File[] dependencies = pom.importCompileAndRuntimeDependencies().resolve().withTransitivity().asFile();
-
-		WebArchive war = ShrinkWrap.create(WebArchive.class);
-		war.addAsLibraries(dependencies).addAsResource(Paths.get(".", "target/classes").toFile(), "").merge(webapp);
 		return war;
 	}
+	// end::createWar[]
 }

@@ -74,6 +74,7 @@
 		</dependency>
 
 		<!-- ARQUILLIAN DEPENDENCIES FOR TESTING -->
+		<!-- tag::arquillian[] -->
 		<dependency>
 			<groupId>org.jboss.arquillian.container</groupId>
 			<artifactId>arquillian-jetty-embedded-9</artifactId>
@@ -86,29 +87,26 @@
 			<version>${version.jetty}</version>
 			<scope>provided</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-deploy</artifactId>
 			<version>${version.jetty}</version>
 			<scope>provided</scope>
 		</dependency>
-
 		<dependency>
-			<!-- Jetty annotations needed for Servlet 3.1 support -->
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-annotations</artifactId>
 			<version>${version.jetty}</version>
 			<scope>provided</scope>
 		</dependency>
-
 		<dependency>
-			<!-- Jetty plus and naming required for testing resource injections -->
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-plus</artifactId>
 			<version>${version.jetty}</version>
 			<scope>provided</scope>
 		</dependency>
+		<!-- end::arquillian[] -->
+
 		<dependency>
 			<groupId>org.jboss.arquillian.graphene</groupId>
 			<artifactId>arquillian-browser-screenshooter</artifactId>
@@ -280,6 +278,11 @@
 					</execution>
 				</executions>
 				<configuration>
+					<attributes>
+						<basedir>${basedir}</basedir>
+						<javadir>${basedir}/src/main/java/nl/topicus/nljug</javadir>
+						<testdir>${basedir}/src/test/java/nl/topicus/nljug</testdir>
+					</attributes>
 					<doctype>article</doctype>
 					<backend>html</backend>
 					<gemPath>${project.build.directory}/gems-provided</gemPath>

@@ -6,7 +6,30 @@ Martijn Dashorst <martijn.dashorst@topicus.nl>
 :icons: font
 :quick-uri: https://github.com/dashorst/nljug2017
 :toc:
-
+ifdef::backend-html5[]
+:twoinches: width='144'
+:full-width: width='100%'
+:half-width: width='50%'
+:quarter-width: width='25%'
+:half-size:
+:thumbnail: width='60'
+endif::[]
+ifdef::backend-pdf[]
+:twoinches: pdfwidth='2in'
+:full-width: scaledwidth='100%'
+:half-width: scaledwidth='50%'
+:quarter-width: scaledwidth='25%'
+:half-size: pdfwidth='50%'
+:thumbnail: pdfwidth='20mm'
+endif::[]
+ifdef::backend-docbook5[]
+:twoinches: width='50mm'
+:full-width: scaledwidth='100%'
+:half-width: scaledwidth='50%'
+:quarter-width: scaledwidth='25%'
+:half-size: width='50%'
+:thumbnail: width='20mm'
+endif::[]
 :!numbered:
 
 toc::[]
@@ -20,17 +43,17 @@ tasteful cheeses in the world.
 We hope you enjoy our selection of cheese as much as we do!
 
 -- Team Cheesr
-
 :numbered:
 
+// tag::listing1[]
 == Buying Cheese
 
-When you point your browser to our store front using the URL _http://example.com_. This will show
-you the page from <<cheesr-home>>.
+When you point your browser to our store front using the URL _http://example.com_.
+This will show you the page from <<cheesr-home>>.
 
 [[cheesr-home, figure 1]]
 .The home page of the Cheesr store.
-image::cheesr-1-home.png[]
+image::cheesr-1-home.png[{half-width}]
 
 You can browse the cheeses using the navigator at the bottom of the page (<<cheesr-navigator>>).
 
@@ -38,8 +61,9 @@ You can browse the cheeses using the navigator at the bottom of the page (<<chee
 .The navigator to discover even more cheese!
 image::cheesr-1-home-navigator.png[]
 
-When you have found the cheese of your liking, you can add it to your shopping cart using the _add_
-link. This will add the cheese to the cart, as shown in <<cheesr-cart>>.
+When you have found the cheese of your liking, you can add it to your shopping cart using the _add_ link.
+This will add the cheese to the cart, as shown in <<cheesr-cart>>.
+// end::listing1[]
 
 [[cheesr-cart, figure 3]]
 .No shopping cart should go without Edam cheese.

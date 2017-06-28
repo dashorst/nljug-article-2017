@@ -1,53 +1,240 @@
 = Genereer een gebruikershandleiding met je tests
-Martijn Dashorst <dashorst@apache.org>
+Martijn Dashorst <martijn.dashorst@topicus.nl>
 1.0, May 28, 2017, Topicus
 :doctype: article
+:figure-caption: Afbeelding
+:listing-caption: Listing
 :toc:
 :icons: font
 :quick-uri: https://github.com/dashorst/nljug2017
+:tabsize: 4
+:indent: 0
 
-Je bent druk bezig met het ontwikkelen van je applicatie en dan staat in eens de productowner naast je bureau: hebben we al een handleiding voor de gebruikers?
-Je stamelt iets over geen tijd gehad hebben en de productowner gaat weer weg om een paar weken later een Word document met BMP screenshots van de applicatie van 3 weken geleden in te checken.
-Vier sprints later en de screenshots lijken helemaal niet meer op wat er echt in de applicatie gebeurt.
-De productowner en de ontwikkelaars nemen in de definition of done op dat de handleiding ook meegenomen moet worden, maar uiteindelijk vindt niemand de tijd om alle screenshots langs te gaan en opnieuw te maken en bij te snijden. 
+"Hebben we al een handleiding voor de gebruikers?" vraagt de productowner.
+Terwijl je teamgenoten onder hun bureaus duiken, stamel je iets over geen tijd, wisselende prioriteiten en de ellenlange backlog.
+Jij bent dan de vrijwilliger om het 96 paginas tellende Word document te voorzien van 149 screenshots. 
+Helaas blijkt vier sprints later dat de applicatie helemaal niet meer lijkt op de screenshots:
+je mag weer aan de bak om die 149 screenshots opnieuw te maken en uit te snijden.
 
-Het maken en bijsnijden van honderden screenshots is enerverend werk dat elk teamlid graag elke release opnieuw doet, toch?
-Het hoeft niet zo te zijn: wij zijn in dit vakgebied gestapt om tijdrovende, menselijke handelingen te automatiseren zodat er tijd overblijft om leukere, waardevollere dingen te doen.
+Het hoeft niet zo te zijn: wij zijn in dit vakgebied gestapt om tijdrovende, menselijke handelingen te automatiseren zodat er tijd overblijft om leukere, waardevollere dingen te doen!
+En wat we leuk vinden is juist software schrijven en complexe problemen oplossen!
 
-Met de juiste ontwikkeltools kan je de screenshots automatisch genereren, integreren in een mooie handleiding en ook nog eens je applicatie goed testen.
+Als ik je nu vertel dat je met de juiste ontwikkeltools de screenshots automatisch kan maken,
+deze integreren in een mooi opgemaakte handleiding in HTML en PDF formaat,
+en daarbij ook nog eens je applicatie goed kan testen?
 
-In dit artikel laat ik zien hoe je een altijd up-to-date handleiding kan genereren met AsciiDoctor, Graphene, Arquillian en AShot.
+In dit artikel laat ik zien hoe je een altijd up-to-date handleiding kan genereren met AsciiDoctor, Graphene, Arquillian en aShot.
+Het lost een daadwerkelijk probleem op, bestaat uit een hoop programmeerwerk, kan zo complex worden als je zelf wil en is ook nog eens leuk!
 
-== Documentatie en Ontwikkelaars
+Om dit te illustreren gebruik ik een eenvoudig project: een online kaaswinkel.
 
-De relatie tussen ontwikkelaars en documentatie is gecompliceerd. Volgens allerlei onderzoeken worden ontwikkelaars het meest gehinderd in hun werk door een gebrek aan documentatie. Zo geeft het grote ontwikkelaarsonderzoek van Stackoverflow uit 2016 gebrekkige documentatie de nummer 2 positie van uitdagingen op het werk (net onder onrealistische verwachtingen met een verschil van 0,2%). Overigens prijkt "aardig moeten doen" ook op deze lijst (plek 16 met 8%).
+== De kaaswinkel Cheesr
 
-Daarentegen schrijven maar weinig ontwikkelaars graag documentatie. Alle methodieken zijn er op gericht om documentatie zoveel mogelijk te vermijden: je moet de juiste en duidelijke namen gebruiken voor je functies en variabelen, korte functies schrijven die lezen als een boek je tests zijn de documentatie, je code is de documentatie en (althans volgens Peter Hilton) moet je je telefoonnummer opnemen in elke sourcefile.
+De kaaswinkel '_Cheesr_' is bedacht in 2005 omdat Eelco, mijn toenmalige co-auteur, de kaaswinkel "de Brink" in Deventer enorm miste na zijn emigratie naar de VS.
+Het is een standaard webapplicatie met twee schermen: het selecteren van kazen en het plaatsen van de bestelling.
+Voor Cheesr is een handleiding geschreven.
+In <<cheesr-manual>> zie je een aantal paginas van de handleiding.
 
-Toch blijkt dat niet altijd voldoende. De code beschrijft niet waarom iets zo geschreven is. En als je project uit 1 miljoen regels code bestaat, duizenden classes en honderden packages, hoe weet je waar je een bepaalde functie uit een class kan vinden? Je moet maar net de juiste naam gebruiken in de autocomplete van je IDE. Maar als nieuw teamlid is het overweldigend om zo'n project in te stromen.
+[[cheesr-manual, afbeelding 1]]
+.Een aantal paginas van de handleiding van Cheesr
+image::cheesr-manual.jpg[]
 
-Documentatie werkt het beste als de afstand tot de code zo klein mogelijk is. Een Word document schrijven en die opslaan op een netwerkschijf (_de f-schijf_) is een recept voor out-of-date documentatie. En alhoewel nog nooit iemand is ontslagen voor het aanschaffen van Confluence, zijn wiki's de plek waar documentatie naar toegaat om te sterven. De snelheid van veroudering van je documentatie is recht evenredig met de afstand tot de code. Inline documentatie heeft de grootste kans om aangepast te worden bij code wijzigingen. JavaDoc (je weet wel, dat auto-gegenereerde commentaar boven je methods) is daarna de meest hoopgevende documentatievorm. De README.md in de root van je project wordt ook nog wel eens onderhouden. Maar wanneer je documentatie opgeslagen wordt in de Github Wiki, Confluence, Word documenten of Google Docs verandert het van nuttige documentatie naar archeologische curiositeit voordat je je minimal viable product uitgeleverd hebt aan je klanten.
+.Bekijk alle code op Github
+****
+De broncode is beschikbaar op github: https://github.com/dashorst/nljug-article-2017.
+Het is een Maven project dus je kan het direct importeren in je favoriete IDE.
+In de README.md staan instructies om het project te bouwen en te runnen.
+In dit artikel zal ik niet stil staan bij de specifieke versies en configuratie van plugins en dependencies: die kan je vinden in het project.
+****
 
-Helaas biedt JavaDoc alleen maar soelaas wanneer je al bij de class of methode bent aangekomen. Voor het ontdekken van functionaliteit is het bijzonder ongeschikt. Een overkoepelend document mist bij JavaDoc (overview.html of package-info.html werken onvoldoende in een IDE--het lezen van tekst tussen < en > tekens is bijzonder demotiverend). Dus er is extra overzichtdocumentatie nodig om het overzicht te geven over je project. Het handigste is om deze documentatie zo dicht mogelijk te houden bij je source code, en indien mogelijk ook te laten quoten uit je source code zodat het ook altijd nog gecompileerd en getest wordt.
+De kaaswinkel gebruikt Maven om de verschillende componenten van het bouwproces aan elkaar te knopen.
+Afbeelding 2 illustreert de stappen die doorlopen worden om vanaf de source code naar een webapplicatie te komen met daarin de handleiding gebundeld.
 
-Met AsciiDoctor kan je dat ideaal bereiken. AsciiDoctor is een platte tekst-formaat met onder andere mogelijkheden om (gedeeltes van) source code te includeren in je tekst. Met behulp van een Maven plugin kan je het onderdeel maken van je build zodat de documentatie altijd up-to-date is. Je kan het publiceren naar HTML, epub of PDF. Daarnaast is AsciiDoctor een prima formaat om ook handleidingen in te schrijven. Het is een ontwikkelaar-vriendelijk formaat dat versioneerbaar is in Git, eenvoudig te leren en beter op te maken is dan Word documenten.
+[[cheesr-build, afbeelding 2]]
+.De fases en bestanden die een rol spelen in het bouwen van de kaaswinkel en de handleiding
+image::build-process.png[]
 
-== Hoe schrijf je een handleiding in AsciiDoctor?
+Nadat de broncode gecompileerd is worden de tests gedraaid.
+De tests sturen een browser aan die de webapplicatie test. 
+Dit wordt met behulp van _Arquillian_, _WebDriver_ en _Graphene_ uitgevoerd.
+De bibliotheek _aShot_ maakt de screenshots en zet deze bestanden in de folder `target/screenshots`.
 
-Om je documentatie te schrijven in AsciiDoctor moet je `.adoc` documenten aanmaken. Aangezien een handleiding een soort boek is, kan je het beste beginnen met een boek definitie:
+In de fase "pre-package" van het Maven bouwprocess, vlak voordat de webapplicatie geassembleerd wordt door Maven, converteert _AsciiDoctor_ de handleiding van _AsciiDoc_ naar HTML en PDF.  
+Uiteindelijk is dan de webapplicatie klaar en zit daarin ook de handleiding als PDF en als HTML bestand.
 
-[]
-====
-= Handleiding Cheesr <1>
-Martijn Dashorst <dashorst@topicus.nl> <2>
-1.0, May 28, 2017, Topicus
-:doctype: book <3>
-:toc: <4>
-====
-<1>: De titel van het boek
-<2>: De auteur
-<3>: Geeft aan dat we een boek willen
-<4>: Genereer een inhoudsopgave
+Als voorbeeld test de code in <<listing-indextest>> dat de checkout-knop niet beschikbaar is als je nog geen item in je winkelwagen hebt zitten.
+Daarnaast maakt de test ook meteen de eerste screenshots (bijvoorbeeld <<cheesr-home>>).
 
-== Wat is AsciiDoctor?
+[[listing-indextest, listing 1]]
+.De eerste test van de kaaswinkel
+[source,java,indent=0]
+----
+include::{testdir}/tests/IndexTest.java[tags="simple,deployment,webdriver"]
+----
 
+De annotatie `@RunWith(Arquillian.class)` geeft aan dat deze testcase met _Arquillian_ gedraaid moet worden.
+Met Arquillian kan je integratietests uitvoeren, servers starten en stoppen en je applicatiecode deployen.
+
+De methode `createDeployment` met de annotatie `@Deployment` vertelt Arquillian wat er naar de server gedeployd moet worden: in dit geval een WAR met daarin onze applicatiecode.
+
+Het veld `@Drone WebDriver browser` is een instructie zodat Arquillian een instantie van _WebDriver_ injecteert in de testcase waarmee we de browser kunnen besturen.
+
+De parameter `@InitialPage GIndex index` van de testmethode geeft aan dat deze test moet beginnen met de pagina `GIndex`.
+`GIndex` is een representatie van de interactiemogelijkheden van de homepage van Cheesr: een implementatie van het _Page Object Pattern_.
+Deze class bevat onder andere de locatie (URL) waar de browser naar toe gezonden moet worden.
+_Graphene_ zorgt ervoor dat de `GIndex` instantie correct gemaakt is, en dat de browser de pagina laadt net voordat de test begonnen is.
+Je kan dan meteen interacteren met die pagina, zoals screenshots nemen of op links klikken, of uitvragen of bepaalde elementen al dan niet aanwezig zijn.
+
+Voor nu is het handig om te zien hoe de screenshots van deze test gebruikt worden in de tekst van de handleiding.
+Het stukje AsciiDoc uit <<listing-asciidoc>> is een voorbeeld hiervan. 
+
+[[listing-asciidoc, listing 2]]
+.Een stukje AsciiDoc uit de handleiding van de kaaswinkel.
+[source,asciidoc]
+----
+include::cheesr.adoc[tags=listing1]
+----
+  
+De test case uit <<listing-indextest>> genereert screenshots met namen als "cheesr-1-home.png".
+De AsciiDoc van <<listing-asciidoc>> pikt deze op in image elementen zoals `image::cheesr-1-home[]`.
+
+== AsciiDoc vs AsciiDoctor
+
+AsciiDoc is een tekstformaat om documenten in te schrijven.
+AsciiDoc lijkt erg veel op het veel gebruikte Markdown, maar biedt meer mogelijkheden:
+includes, inhoudsopgave, automatische nummering van secties, waarschuwingen, annotaties bij code voorbeelden en nog veel meer.
+
+AsciiDoctor is een project dat AsciiDoc kan verwerken en omzetten naar onder andere PDF, HTML, EPub en DocBook.
+Er is een commandline tool die je direct kan aanroepen, maar ook plugins voor Maven en Jekyll (een statische website generator).
+AsciiDoctor integreert ook met diagram tools zoals PlantUML en GraphViz, waarmee je UML diagrammen kan beschrijven in platte tekst.
+
+AsciiDoc is uitermate geschikt om op te slaan in een Git repository, omdat het een platte tekst formaat is.
+Je kan dan je documentatie net zo versioneren als de code van je project en bijvoorbeeld meenemen in code reviews.
+
+De AsciiDoc inhoud van het voorbeeldproject (waarin ook dit artikel staat) ziet er als volgt uit:
+
+----
+src/main/asciidoc
+├── artikel.adoc
+├── cheesr.adoc
+└── images
+    ├── build-process.png
+    ├── cheesr-cover.jpg
+    ├── cheesr-manual.jpg
+    └── pageobjects.png
+----
+
+Met deze documenten kan AsciiDoctor de handleiding genereren en de screenshots in de handleiding opnemen.
+De screenshots worden genomen tijdens het uitvoeren van de applicatietests.
+Dit is opgezet met behulp van Arquillian, WebDriver en Graphene. 
+
+== WebDriver en Graphene
+
+WebDriver is een technologie om browsers te kunnen besturen en uit te lezen.
+Dit kan fragiele code opleveren als je niet goed oplet: wijzigingen in de structuur van de HTML in de browser kunnen je tests eenvoudig laten falen.
+Graphene is een schil om WebDriver heen om je applicatie te beschrijven op een hoger abstractieniveau door de (interactie met) HTML te encapsuleren met het _Page Objects Patroon_.
+
+In plaats van op zoek te gaan naar een link in het HTML document om een kaas aan de winkelwagen toe te voegen, roep je de `addCheese` methode aan op je pagina object. 
+Natuurlijk gebeurt achter de schermen alsnog het op zoek gaan in de HTML naar de betreffende link, maar is dat verborgen voor je tests.
+In <<pageobjects>> zie je wat het verschil is tussen direct werken met de API van WebDriver (en daarmee de HTML) en werken met een Page Objects API.
+
+.Het verschil tussen de WebDriver API en Page Objects 
+[[pageobjects, afbeelding 3]]
+image::pageobjects.png[]
+
+Het gebruik van page objects maakt je tests een stuk beter leesbaar.
+De code in <<listing-webdriver>> geeft een voorbeeld van het verschil tussen de WebDriver API en het gebruik van Page Objects.
+
+[[listing-webdriver, listing 3]]
+.Voorbeeld van het werken met de WebDriver API en Page Objects
+[source,java,indent=0]
+----
+// WebDriver code:
+List<WebElement> addLinks = browser
+    .findElements(By.cssSelector("a[id^=add]"));
+addLinks.stream()
+    .filter(e -> e.getAttribute("id").contains("edam"))
+    .findFirst()
+    .click();
+
+Assert.assertTrue(browser.findElement(By.linkText("checkout")).isPresent());
+
+// page objects code:
+indexPage.addCheese("edam");
+Assert.assertTrue(index.checkoutIsPresent());
+----
+
+In het voorbeeld van de page objects code is de bedoeling van de test direct duidelijk, terwijl dat in de WebDriver code verborgen zit in het parsen van de HTML structuur.
+Natuurlijk is dit gewoon het verplaatsen van de WebDriver logica naar een façade, maar dat is nu juist de essentie van het _Page Object_ patroon.
+
+De code in <<listing-gindex>> laat de implementatie zien van het `GIndex` page object.
+
+.Een Page Object voor de Cheesr homepage
+[[listing-gindex, listing 5]]
+[source,java,indent=0]
+----
+include::{testdir}/pageobjects/GIndex.java[tags=buy] 
+----
+
+De code begint met `@Location` om te vertellen waar de pagina zich bevindt in de applicatie: `""` betekent de _root_.
+Daarna worden alle links verzameld die een kaas aan de winkelwagen kunnen toevoegen.
+Tot slot biedt de `addCheese` methode de mogelijkheid om een kaas op basis van de naam toe te voegen door op de bijbehorende link te klikken. 
+
+Dankzij Graphene kan je eenvoudig het Page Objects patroon toepassen om een model te maken van je applicatie zodat je tests leesbaar en onderhoudbaar blijven.
+Nu rest ons nog het daadwerkelijk maken van de screenshots.
+De bibliotheek _aShot_ is gemaakt om met behulp van WebDriver screenshots te maken.
+
+== Screenshots met aShot
+
+aShot heeft een vrij eenvoudige API.
+Je hoeft alleen de WebDriver instantie mee te geven en het element waarvan je de screenshot wilt maken.
+Je krijgt dan de afbeelding terug om mee te doen wat je wil.
+Omdat je wel wat extra zaken kan instellen is het handig om dit te wrappen in een functie die je vanuit je tests kan aanroepen.
+
+Je kan ook meer webelementen aangeven waarvan een plaatje genomen moet worden.
+Daarnaast kan je ook aangeven dat er extra ruimte om de elementen meegenomen moet worden en kan je filters loslaten op de omliggende ruimte, zoals het zwart-wit maken, of het wazig maken (blurren) van de rand.
+De code in <<listing-camera>> laat zien hoe je dit met aShot voor elkaar kan krijgen. 
+
+.Neemt een screenshot van specifieke elementen in de pagina
+[[listing-camera, listing 6]] 
+[source,java,indent=0]
+----
+include::{testdir}/Camera.java[tags=multishot]
+----
+
+Met deze functie is het maken van een screenshot heel eenvoudig geworden.
+Nu kunnen we tijdens het testen screenshots wegschrijven en deze gebruiken in onze handleiding zoals in <<listing-buy>>.
+
+.Een test die gebruik maakt van het page object `GIndex` en screenshots neemt
+[[listing-buy, listing 7]]
+[source,java,indent=0]
+----
+include::{testdir}/tests/IndexTest.java[tags="buy"]
+----
+
+Een voorbeeld van een screenshot genomen met aShot zie je in <<cheesr-home>>.
+
+[[cheesr-home, afbeelding 4]]
+.De home page van de kaaswinkel
+image::cheesr-1-home.png[]
+
+En hiermee is het artikel rond: we kunnen de applicatie testen, screenshots maken en een handleiding genereren. 
+
+== Conclusie
+
+We hebben nu alle onderdelen bij elkaar: de documentatie leeft met de code in AsciiDoc formaat.
+We testen onze applicatie via de browser dankzij Arquillian en Graphene.
+Tijdens het uitvoeren van de tests maken we screenshots en spitsen deze toe op precies die onderdelen die belangrijk zijn met aShot.
+Maven voegt al deze stappen samen tot één geölied proces dat uiteindelijk onze up-to-date handleiding opneemt in onze applicatie.
+
+Met deze setup kan je ook geïnternationaliseerde screenshots maken voor je meertalige handleidingen:
+zet je applicatie in een andere taal en voer de tests opnieuw uit.
+Nu alleen nog iemand bereid vinden om die 96 paginas te vertalen.
+
+.Over de auteur
+****
+Martijn Dashorst
+
+Ik werk sinds 2004 bij Topicus.
+Ik lust geen kaas. 
+****

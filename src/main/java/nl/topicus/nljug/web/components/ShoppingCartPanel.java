@@ -32,7 +32,9 @@ public class ShoppingCartPanel extends GenericPanel<Cart> {
 					private static final long serialVersionUID = 1L;
 
 					{
-						setMarkupId("remove-" + item.getIndex());
+						Cheese cheese = item.getModelObject();
+						String safeCheeseName = cheese.getName().toLowerCase().replaceAll(" ", "-");
+						setMarkupId("remove-" + safeCheeseName);
 					}
 
 					@Override

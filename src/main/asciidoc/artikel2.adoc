@@ -1,0 +1,251 @@
+# Genereer een gebruikershandleiding met je tests
+Martijn Dashorst <dashorst@apache.org>
+1.0, May 28, 2017, Topicus
+:doctype: article
+:toc:
+:icons: font
+:quick-uri: https://github.com/dashorst/nljug2017
+:tabsize: 4
+:indent: 0
+
+Je bent druk bezig met het ontwikkelen van je applicatie en dan staat in eens de productowner naast je bureau: hebben we al een handleiding voor de gebruikers?
+Je stamelt iets over geen tijd gehad hebben en de productowner gaat weer weg om een paar weken later een Word document met BMP screenshots van de applicatie van 3 weken geleden in te checken.
+Vier sprints later en de screenshots lijken helemaal niet meer op wat er echt in de applicatie gebeurt.
+De productowner en de ontwikkelaars nemen in de definition of done op dat de handleiding ook meegenomen moet worden, maar uiteindelijk vindt niemand de tijd om alle screenshots langs te gaan en opnieuw te maken en bij te snijden. 
+
+Het maken en bijsnijden van honderden screenshots is enerverend werk dat elk teamlid graag elke release opnieuw doet, toch?
+Het hoeft niet zo te zijn: wij zijn in dit vakgebied gestapt om tijdrovende, menselijke handelingen te automatiseren zodat er tijd overblijft om leukere, waardevollere dingen te doen.
+
+Met de juiste ontwikkeltools kan je de screenshots automatisch genereren, integreren in een mooie handleiding en ook nog eens je applicatie goed testen.
+
+In dit artikel laat ik zien hoe je een altijd up-to-date handleiding kan genereren met AsciiDoctor, Graphene, Arquillian en AShot.
+
+## Documentatie en Ontwikkelaars
+De relatie tussen ontwikkelaars en documentatie is gecompliceerd. Volgens allerlei onderzoeken worden ontwikkelaars het meest gehinderd in hun werk door een gebrek aan documentatie. Zo geeft het grote ontwikkelaarsonderzoek van Stackoverflow uit 2016 gebrekkige documentatie de nummer 2 positie van uitdagingen op het werk (net onder onrealistische verwachtingen met een verschil van 0,2%). Overigens prijkt "aardig moeten doen" ook op deze lijst (plek 16 met 8%).
+
+Daarentegen schrijven maar weinig ontwikkelaars graag documentatie. Alle methodieken zijn er op gericht om documentatie zoveel mogelijk te vermijden: je moet de juiste en duidelijke namen gebruiken voor je functies en variabelen, korte functies schrijven die lezen als een boek je tests zijn de documentatie, je code is de documentatie en (althans volgens Peter Hilton) moet je je telefoonnummer opnemen in elke sourcefile.
+
+Toch blijkt dat niet altijd voldoende. De code beschrijft niet waarom iets zo geschreven is. En als je project uit 1 miljoen regels code bestaat, duizenden classes en honderden packages, hoe weet je waar je een bepaalde functie uit een class kan vinden? Je moet maar net de juiste naam gebruiken in de autocomplete van je IDE. Maar als nieuw teamlid is het overweldigend om zo'n project in te stromen.
+
+Documentatie werkt het beste als de afstand tot de code zo klein mogelijk is. Een Word document schrijven en die opslaan op een netwerkschijf (_de f-schijf_) is een recept voor out-of-date documentatie. En alhoewel nog nooit iemand is ontslagen voor het aanschaffen van Confluence, zijn wiki's de plek waar documentatie naar toegaat om te sterven. De snelheid van veroudering van je documentatie is recht evenredig met de afstand tot de code. Inline documentatie heeft de grootste kans om aangepast te worden bij code wijzigingen. JavaDoc (je weet wel, dat auto-gegenereerde commentaar boven je methods) is daarna de meest hoopgevende documentatievorm. De README.md in de root van je project wordt ook nog wel eens onderhouden. Maar wanneer je documentatie opgeslagen wordt in de Github Wiki, Confluence, Word documenten of Google Docs verandert het van nuttige documentatie naar archeologische curiositeit voordat je je minimal viable product uitgeleverd hebt aan je klanten.
+
+Helaas biedt JavaDoc alleen maar soelaas wanneer je al bij de class of methode bent aangekomen. Voor het ontdekken van functionaliteit is het bijzonder ongeschikt. Een overkoepelend document mist bij JavaDoc (overview.html of package-info.html werken onvoldoende in een IDE--het lezen van tekst tussen < en > tekens is bijzonder demotiverend). Dus er is extra overzichtdocumentatie nodig om het overzicht te geven over je project. Het handigste is om deze documentatie zo dicht mogelijk te houden bij je source code, en indien mogelijk ook te laten quoten uit je source code zodat het ook altijd nog gecompileerd en getest wordt.
+
+Met AsciiDoctor kan je dat ideaal bereiken.
+
+## Wat is AsciiDoctor?
+
+AsciiDoctor is een tool om van tekst in het AsciiDoc formaat geschreven HTML, PDF, DocBook en EPub te genereren. 
+Het biedt onder andere mogelijkheden om (gedeeltes van) source code te includeren in je tekst. 
+Met behulp van een Maven plugin kan je het onderdeel maken van je build zodat de documentatie altijd up-to-date is.
+Het AsciiDoc formaat is prima geschikt om artikelen, handleidingen en boeken in te schrijven. 
+Je kan het zelfs gebruiken om presentaties mee te geven.
+AsciiDoc is een platte tekst formaat en daardoor prima versioneerbaar in Git.
+
+## Hoe schrijf je een handleiding in AsciiDoctor?
+
+Om je documentatie te schrijven in AsciiDoctor moet je `.adoc` documenten aanmaken.
+Aangezien een handleiding een soort boek is, kan je het beste beginnen met een boek definitie:
+
+[source,asciidoc]
+----
+= Handleiding Cheesr <1>
+Martijn Dashorst <martijn.dashorst@topicus.nl>
+1.0, May 28, 2017, Topicus
+:doctype: book 
+:toc: <2>
+
+:!numbered: <3>
+toc::[]
+
+== Inleiding
+
+...
+
+:numbered: <4>
+
+== Kaas kopen
+ 
+----
+<1> De titel van het boek
+<2> Diverse instellingen voor AsciiDoctor
+<3> Zet sectienummering uit
+<4> Zet sectienummering weer aan
+
+Je kan een project met Maven zo complex maken als je wil, maar voor dit artikel heb ik gekozen voor een simpel project gebaseerd op de Apache Wicket quick start, en daarin een eenvoudige kaaswinkel gemaakt.
+De principes die ik hier toon zijn ook toegepast in een aantal complexere projecten met veel uitgebreidere tests en Maven module structuren.
+
+## De kaaswinkel
+
+De kaaswinkel bevat twee pagina's: de lijst met kazen waaruit je kan kiezen om je winkelwagen te vullen en de afrekenpagina om de bestelling te plaatsen. 
+Om het allemaal eenvoudig te houden is er geen echte database, wordt er geen Spring of JavaEE gebruikt en zijn de pagina's vrij eenvoudig.
+
+Voor de pagina's is gebruik gemaakt van Apache Wicket, omdat de code en het ontwerp van de winkel al klaar lag.
+De manier van tests schrijven en screenshots maken is echter voor willekeurige web projecten geschikt, dus je hoeft niet gebruik te maken van Wicket.
+Ben je geïnteresseerd in de applicatiecode kan je in de github repository kijken onder `src/main/java`: daarin staat alle applicatiecode.
+Voor de rest van dit artikel zijn met name de `pom.xml` en de testcode interessant.
+
+De webwinkel voor kaas kunnen we testen met Arquillian en Graphene. 
+
+### Arquillian voor het runnen van je tests
+
+Arquillian is een platform om integratietests te kunnen schrijven.
+Het is zo uitgebreid en bevat zoveel functionaliteit dat je in één artikel het geen recht kan aandoen.
+Zo bouwen en starten we in onze complexere projecten docker containers voor de database en webapplicaties, die dan weer code geïnjecteerd krijgen voor het runnen van tests (bijvoorbeeld een bepaalde uitgangssituatie verzorgen).
+
+Een standaard Arquillian test begint met het starten van de Arquillian runner:
+
+[source,java,indent=0]
+----
+@RunWith(Arquillian.class)
+public class IndexTest {
+}
+----
+
+Je moet dan nog wel vertellen wat Arquillian moet starten om je tests goed te kunnen draaien.
+Hier kan je van alles starten, maar in dit geval gebruiken we Jetty als server.
+Het volstaat om in je `pom.xml` een afhankelijkheid op te nemen op `arquillian-jetty-embedded-9` en de benodigde jetty dependencies.
+Arquillian biedt connectoren voor alle Java applicatieservers, en maakt het daarmee mogelijk om je applicatie te testen op compatibiliteit met verschillende servers, bijvoorbeeld wildfly en glassfish. 
+
+[source,xml,indent=0]
+----
+include::{basedir}/pom.xml[tags=arquillian]
+----
+
+Om de applicatie in Jetty te kunnen draaien is een deployment nodig.
+Dit is een static methode in je test class die gerunt wordt met Arquillian.
+Deze methode levert je archief op dat naar de server gestuurd moet worden.
+
+[source,java,indent=0]
+----
+include::{testdir}/tests/IndexTest.java[tags=deployment]
+----
+
+Het bouwen van de daadwerkelijke deployment is in een aparte class gedaan zodat je deze kan hergebruiken in andere tests.
+Het webarchief voor onze kaaswinkel wordt gebouwd zoals in onderstaand stuk code:
+
+[source,java,indent=0]
+----
+include::{testdir}/CheesrDeployment.java[tags=createWar]
+----
+<1> Leest de POM van het project
+<2> Bepaalt de Maven dependencies voor de applicatie
+<3> Creëert de WAR voor het project
+
+Nu we een deployment hebben is Arquillian klaar om een test van ons te draaien.
+Je kan bijvoorbeeld onderstaande test draaien en je zal zien dat Arquillian een war bouwt en deze in Jetty deployt.
+
+[source,java,indent=0]
+----
+include::{testdir}/tests/ArquillianTest.java[tags=arquillian]
+----
+
+Wanneer we onze webpaginas willen testen zullen we een browser moeten starten en instrueren de paginas op te vragen.
+Hiervoor wordt veelal het open source project _WebDriver_ gebruikt.
+Arquillian heeft hiervoor een wrapper geschreven om het gebruik van _WebDriver_ te vereenvoudigen: _Graphene_.
+ 
+### Graphene voor het schrijven van tests
+
+Graphene is een Java schil om WebDriver heen.
+Met deze technologieën kan je een browser bedienen en daarmee tests uitvoeren.
+Dankzij Graphene kan je de browser injecteren in je test.
+
+In ons project maken we gebruik van headless browsers omdat deze werken zonder dat er een videokaart in je server hoeft te zitten.
+Dit is met name handig als je draait op een Jenkins server.
+Op dit moment werkt alleen nog _phantomjs_ als browser voor het maken van screenshots, maar over een paar maanden is _Chrome Headless_ de browser die je het beste kan gebruiken.
+
+Als eerste dienen we Arquillian te vertellen dat we Graphene willen gebruiken door de juiste Maven dependency op te nemen in onze POM.
+Daarna moeten we _webdriver_ vertellen dat we _phantomjs_ als browser gebruiken.
+Dit doe je door in `src/test/resources/arquillian.xml` (het Arquillian configuratiebestand) een extensie te registreren:
+
+[source,xml,indent=0]
+----
+include::{basedir}/src/test/resources/arquillian.xml[]
+----
+  
+Hierna kunnen we in onze tests direct webdriver gebruiken.
+Met webdriver kan je direct de browser manipuleren en uitlezen.
+Echter kan dit fragiele code opleveren als je niet goed oplet. 
+Om de tests overzichtelijk te houden is het _Page Objects Patter_ ontstaan.
+Met page objects encapsuleer je de HTML van de geladen pagina in objecten in je tests.
+In plaats van direct met HTML te werken in je tests werk je met de functionaliteit van je applicatie.
+
+image::pageobjects.png[]
+
+Bijvoorbeeld in plaats van in je test op zoek te gaan naar de link in het HTML document om een kaas aan de winkelwagen toe te voegen, roep je de `addCheese` methode aan op je pagina object.
+Natuurlijk gebeurt onderwater alsnog het op zoek gaan in de HTML naar de betreffende link, maar is dat verborgen voor je tests.
+
+Onderstaand page object voor de pagina met alle kazen biedt de functionaliteit om een kaas aan de winkelwagen toe te voegen.
+
+[source,java,indent=0]
+----
+include::{testdir}/pageobjects/GIndex.java[tags=buy] 
+----
+<1> Dit pagina object bevindt zich in de root van de web applicatie
+<2> Vindt alle links waarvan de `id` begint met `add`
+<3> Zoekt de link met daarin de naam van de cheese en klikt daarop
+
+De code begint met de instructie om te vertellen waar het object zich bevindt in de web applicatie.
+Daarna worden alle links verzameld die een kaas aan de winkelwagen kunnen toevoegen.
+Tot slot biedt de `addCheese` methode de mogelijkheid om een kaas op basis van de naam toe te voegen door op de bijbehorende link te klikken. 
+In de tests kan je dan op deze manier gebruik maken van het page object.
+
+[source,java,indent=0]
+----
+include::{testdir}/tests/IndexTest.java[tags=buy]
+----
+<1> Laat de test starten met deze pagina
+
+De `@InitialPage` annotatie van de parameter van de testmethode zorgt ervoor dat Graphene de browser naar de opgegeven pagina gaat.
+Wanneer je de testmethode ingaat is deze dus al opgevraagd en kan je met de pagina interacteren, zoals op een kaas link klikken.
+
+Op deze manier kan je een uitgebreide test suite maken van je applicatie dat de kwaliteit natuurlijk ten goede komt. 
+Maar daarmee krijg je nog niet een handleiding met screenhots.
+De bibliotheek _aShot_ is gemaakt om met behulp van WebDriver screenshots te maken.
+
+### aShot voor het maken van screenshots
+
+aShot heeft een eenvoudige API. Je hoeft alleen de WebDriver instantie mee te geven en het element waarvan je de screenshot wilt maken.
+Je krijgt dan het plaatje terug om mee te doen wat je wil.
+Omdat je wel wat extra zaken kan instellen is het handig om dit te wrappen in een functie die je vanuit je tests kan aanroepen.
+Onderstaande code neemt een screenshot van het hele document en slaat die op onder de gegeven naam.
+
+[source,java,indent=0]
+----
+include::{testdir}/ScreenshotTaker.java[tags=singleshot]
+----
+
+Je kan ook één of meer webelementen aangeven bij aShot waarvan een plaatje gegenereerd moet worden.
+Daarnaast kan je ook aangeven dat er extra ruimte om de elementen meegenomen moet worden en kan je filters loslaten op de omliggende ruimte, zoals het zwart-wit maken, of het wazig maken (blurren) van de rand.
+
+[source,java,indent=0]
+----
+include::{testdir}/ScreenshotTaker.java[tags=multishot]
+----
+<1> Let op dat je de meervoudsvorm van de selectie gebruikt, anders krijg je alleen het eerste element dat geselecteerd wordt.
+
+Met deze functies is het maken van een screenshot heel eenvoudig geworden.
+Wanneer je je beseft dat je met de css selecties ook direct meerdere elementen kan selecteren in één expressie, wordt het uitsnijden van een stukje webpagina kinderlijk eenvoudig.
+
+[source,java,indent=0]
+----
+takeScreenshot(webdriver, "index");
+takeScreenshot(webdriver, "index", By.cssSelector(".odd, .even"));
+----
+
+Voor het selecteren van de elementen om een screenshot te maken moet in je pagina in de browser JQuery geladen zijn.
+aShot heeft dat nodig om de dimensies te bepalen van de geselecteerde HTML elementen.
+Als je dit niet doet krijg je de volgende foutmelding wanneer je een screenshot van meer dan één element probeert te maken:
+
+----
+Can't find variable $
+----
+
+Om dit toch te kunnen gebruiken is in de Java code in de header expliciet een referentie naar JQuery opgenomen. 
+
+Nu kunnen we op de juiste momenten tijdens het testen screenshots wegschrijven en deze gebruiken in ons document.
+
+[source,java,indent=0]
+----
+include::{testdir}/tests/IndexTest.java[tags=withshots]
+----
