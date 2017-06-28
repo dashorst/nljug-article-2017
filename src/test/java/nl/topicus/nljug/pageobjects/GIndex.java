@@ -20,10 +20,10 @@ public class GIndex {
 	@FindBy(css = "a[id^=remove]")
 	private List<GrapheneElement> removeLinks;
 
+	// tag::buy[]
 	@FindBy(css = "input[type=button]")
 	private GrapheneElement checkout;
 
-	// tag::buy[]
 	public void addCheese(String cheese) {
 		addLinks.stream()
 			.filter(a -> a.getAttribute("id").contains(safeCheeseId(cheese)))
@@ -44,18 +44,18 @@ public class GIndex {
 	private String safeCheeseId(String cheese) {
 		return cheese.toLowerCase().replaceAll(" ", "-");
 	}
+	
+	public void checkout() {
+		checkout.click();
+	}
+	// tag::buy[]
 
 	public boolean checkoutPresent() {
 		return checkout.isPresent();
 	}
 
-	public void checkout() {
-		checkout.click();
-	}
-
 	public By byCart() {
-		return By.id("cart");
+		return By.cssSelector("div[id=cart],input[type=button]");
 	}
-	// tag::buy[]
 }
 // end::buy[]

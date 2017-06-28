@@ -58,7 +58,7 @@ De tests sturen een browser aan die de webapplicatie test.
 Dit wordt met behulp van _Arquillian_, _WebDriver_ en _Graphene_ uitgevoerd.
 De bibliotheek _aShot_ maakt de screenshots en zet deze bestanden in de folder `target/screenshots`.
 
-In de fase "pre-package" van het Maven bouwprocess, vlak voordat de webapplicatie geassembleerd wordt door Maven, converteert _AsciiDoctor_ de handleiding van _AsciiDoc_ naar HTML en PDF.  
+In de fase "pre-package" van het bouwprocess, vlak voordat de webapplicatie geassembleerd wordt door Maven, converteert _AsciiDoctor_ de handleiding van _AsciiDoc_ naar HTML en PDF.  
 Uiteindelijk is dan de webapplicatie klaar en zit daarin ook de handleiding als PDF en als HTML bestand.
 
 Als voorbeeld test de code in <<listing-indextest>> dat de checkout-knop niet beschikbaar is als je nog geen item in je winkelwagen hebt zitten.
@@ -96,6 +96,7 @@ include::cheesr.adoc[tags=listing1]
   
 De test case uit <<listing-indextest>> genereert screenshots met namen als "cheesr-1-home.png".
 De AsciiDoc van <<listing-asciidoc>> pikt deze op in image elementen zoals `image::cheesr-1-home[]`.
+Het uiteindelijke resultaat ziet er dan uit zoals in <<cheesr-manual>>.
 
 == AsciiDoc vs AsciiDoctor
 
