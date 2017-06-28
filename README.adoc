@@ -36,11 +36,11 @@ NOTE: phantom.js is a deprecated project because Chrome and Firefox are working 
 
 - in order to capture partial screenshots, aShot requires JQuery to be in the HTML of the page. Because of this, the IndexPage and CheckoutPage include a JQuery reference as a header item.
 
-- the pipeline for files is:
-  - tests generate screenshots in `target/screenshots`
-  - Maven resource plugin copies image files from `src/main/asciidoc/images` to `target/screenshots` because AsciiDoctor can't handle multiple image folders
-  - AsciiDoctor assembles the manuals into the `target/generated-docs` folder
-  - Maven war plugin copies the `target/generated-docs` folder into the war under `/manual`
+* the pipeline for files is:
+** tests generate screenshots in `target/screenshots`
+** Maven resource plugin copies image files from `src/main/asciidoc/images` to `target/screenshots` because AsciiDoctor can't handle multiple image folders
+** AsciiDoctor assembles the manuals into the `target/generated-docs` folder
+** Maven war plugin copies the `target/generated-docs` folder into the war under `/manual`
   
 - Graphene is not required, but makes writing tests a much better experience
  
