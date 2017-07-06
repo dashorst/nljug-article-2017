@@ -10,10 +10,10 @@ Martijn Dashorst <martijn.dashorst@topicus.nl>
 :tabsize: 4
 :indent: 0
 
-"Hebben we al een handleiding voor de gebruikers?" vraagt de productowner.
+"Hebben we al een handleiding voor de gebruikers?" vraagt de product owner.
 Terwijl je teamgenoten onder hun bureau's duiken, stamel jij iets over geen tijd, wisselende prioriteiten en de ellenlange backlog.
 Zonder succes natuurlijk, dus ben jij de vrijwilliger om het 96 pagina's tellende Word document te voorzien van 149 screenshots. 
-Vier sprints later lijkt de applicatie totaal niet meer op de screenshots en mag je dus weer van voren af aan beginnen.
+Vier sprints later lijkt de applicatie totaal niet meer op de screenshots en mag je weer van voren af aan beginnen.
 
 Maar het kan anders! We zijn in dit vakgebied gestapt om tijdrovende menselijke handelingen te automatiseren zodat er tijd overblijft om leuke, waardevolle dingen te doen!
 En juist software schrijven en complexe problemen oplossen vinden we leuk!
@@ -54,8 +54,10 @@ Afbeelding 2 illustreert de stappen die doorlopen worden om vanaf de source code
 image::build-process.png[]
 
 Nadat de broncode gecompileerd is worden de tests gedraaid.
-Met behulp van _Arquillian_, _WebDriver_ en _Graphene_ wordt in de tests een browser aangestuurd die de webapplicatie test.
+_Arquillian_ zorgt ervoor dat de webapplicatie gestart wordt, en bestuurt met _WebDriver_ de browser.
+Dankzij _Graphene_  kunnen we HTML pagina's als Java objecten beschrijven en deze gebruiken om de tests uit te voeren.
 De bibliotheek _aShot_ maakt de screenshots en zet deze bestanden in de folder `target/screenshots`.
+Verderop leer je meer over deze technologieën.
 
 In de fase "pre-package" van het bouwprocess, vlak voordat de webapplicatie geassembleerd wordt door Maven, converteert _AsciiDoctor_ de handleiding van _AsciiDoc_ naar HTML en PDF.  
 Uiteindelijk is dan de webapplicatie klaar en zit daarin ook de handleiding als PDF en als HTML bestand.
@@ -72,6 +74,7 @@ include::{testdir}/tests/IndexTest.java[tags="simple,deployment,webdriver"]
 
 De annotatie `@RunWith(Arquillian.class)` geeft aan dat deze testcase met _Arquillian_ gedraaid moet worden.
 Met Arquillian kan je integratietests uitvoeren, servers starten en stoppen en je applicatiecode deployen.
+Ook kan je Arquillian gebruiken om je tests tegen een al draaiende remote server uit te voeren zodat je niet vanuit je tests die helemaal hoeft op te zetten.
 
 De methode `createDeployment` met de annotatie `@Deployment` vertelt Arquillian wat er naar de server gedeployed moet worden: in dit geval een WAR met daarin onze applicatiecode.
 
@@ -97,7 +100,7 @@ De test case uit <<listing-indextest>> genereert screenshots met namen als "chee
 De AsciiDoc van <<listing-asciidoc>> pikt deze op in image elementen zoals `image::cheesr-1-home[]`.
 Het uiteindelijke resultaat ziet er dan uit zoals in <<cheesr-manual>>.
 
-== AsciiDoc vs AsciiDoctor
+== AsciiDoc en AsciiDoctor
 
 AsciiDoc is een tekstformaat om documenten in te schrijven.
 AsciiDoc lijkt erg veel op het veel gebruikte Markdown, maar biedt meer mogelijkheden:
