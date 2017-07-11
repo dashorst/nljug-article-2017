@@ -16,6 +16,10 @@ Everything else of this project is https://opensource.org/licenses/MIT[MIT licen
 
 This application requires Java 8 and Maven 3 (3.5.0 recommended).
 
+The following steps are done during processing.
+
+image::src/main/asciidoc/images/build-process.png[]
+
 === IDE
 
 You can import the project into your IDE and build it there.
